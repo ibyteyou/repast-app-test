@@ -20,6 +20,13 @@
       liked: false
     }),
     props: ['data', 'name', 'imgUrl'],
+    watch: {
+      name (name, oldName) {
+        if (oldName && this.imgUrlComputed) {
+          this.updateRemoteImgUrlByName()
+        }
+      }
+    },
     computed: {
       _imgUrl: {
         get: ({ imgUrl, imgUrlComputed }) => imgUrl || imgUrlComputed || null,
@@ -55,15 +62,18 @@
         }
         // console.log(likedBreeds)
         this.$ls.set(LS_LIKED_BREEDS, likedBreeds)
+      },
+      updateRemoteImgUrlByName () {
+        this.$http.get(`${this.$apiUrl}/breed/${this.name}/images/random`).then(({ data }) => {
+          this._imgUrl = data.message
+        })
       }
     },
     created () {
       this.liked = this.$ls.get(LS_LIKED_BREEDS, []).indexOf(this.name) > -1
       // console.log(this.imgUrl)
       if (!this._imgUrl) {
-        this.$http.get(`${this.$apiUrl}/breed/${this.name}/images/random`).then(({ data }) => {
-          this._imgUrl = data.message
-        })
+        this.updateRemoteImgUrlByName() // very strange api /=====/
       }
     // },
     // mounted () {
