@@ -3,7 +3,7 @@
     app-header
     random-breed#first-breed(v-if="loaded", :data="allBreeds[firstBreedKey]", :name="firstBreedKey")
     #main-breeds
-      random-breed(v-for="(breed, name, index) in allBreeds", :data="breed", :key="index", :name="name")
+      random-breed(v-if="index" v-for="(breed, name, index) in allBreeds", :data="breed", :key="index", :name="name")
 </template>
 
 <script>

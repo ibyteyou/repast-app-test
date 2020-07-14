@@ -1,12 +1,18 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
+import VueStorage from 'vue-ls'
 import { API_URL } from './consts'
 import app from './app.vue'
 
 Vue.config.productionTip = false
 Vue.use(VueResource)
 Vue.use(VueRouter)
+Vue.use(VueStorage, {
+  namespace: 'vuejs__', // key prefix
+  name: 'ls', // name variable Vue.[ls] or this.[$ls],
+  storage: 'local', // storage name session, local, memory
+})
 
 Vue.http.options.root = API_URL
 Vue.prototype.$apiUrl = API_URL
