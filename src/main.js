@@ -1,10 +1,15 @@
 import Vue from 'vue'
+import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
+import { API_URL } from './consts'
 import app from './app.vue'
 
 Vue.config.productionTip = false
-
+Vue.use(VueResource)
 Vue.use(VueRouter)
+
+Vue.http.options.root = API_URL
+Vue.prototype.$apiUrl = API_URL
 
 const App = new Vue({
   render: h => h(app),

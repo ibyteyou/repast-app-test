@@ -1,16 +1,31 @@
 <template lang="pug">
   #app
     app-header
-    img(alt="Vue logo" src="./assets/logo.png")
+    #main-breeds
+      random-breed(v-for="(breed, name) in allBreeds", :data="breed", :name="name")
 </template>
 
 <script>
-  import appHeader from './app-header.vue'
+  import appHeader from './app-header'
+  import randomBreed from './ui/random-breed'
 
   export default {
     name: 'App',
     components: {
-      appHeader
+      appHeader,
+      randomBreed
+    },
+    data: () => ({
+      allBreeds: []
+    }),
+    created () {
+      this.$http.get('breeds/list/all').then(({ data }) => {
+        if (!data || !data.message) {
+          this.allBreeds = new Error('failed "breeds/list/all" API lol =/')
+          return
+        }
+        this.allBreeds = data.message
+      })
     }
   }
 </script>
