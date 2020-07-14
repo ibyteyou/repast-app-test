@@ -78,8 +78,8 @@
       toMain () {
         this.$router.push('/')
       },
-      load () {
-        if (this.routeGroupBreed) {
+      load (opts = {}) {
+        if (!opts.forceBreadGroups && this.routeGroupBreed) {
           this.$http.get(`breed/${this.routeGroupBreed}/images`).then(({ data }) => {
             this.allBreeds = data.message.reduce((acc, cur, index) => {
               acc.push({
@@ -88,6 +88,9 @@
               })
               return acc
             }, [])
+            if (!this.abcBreedGroups) {
+              this.load({ forceBreadGroups: true })
+            }
           })
         } else {
           this.$http.get('breeds/list/all').then(({ data }) => {
@@ -109,6 +112,9 @@
                 }
                 return acc
               }, {})
+              if (opts.forceBreadGroups) {
+                return
+              }
             }
 
             // this.allBreeds = shuffle(data.message)
