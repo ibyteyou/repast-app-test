@@ -60,7 +60,7 @@
           likedBreeds.splice(likeAlreadyIndex, 1)
           this.liked = false
         }
-        console.log(likedBreeds)
+        // console.log(likedBreeds)
         // console.log(likedBreeds)
         this.$ls.set(LS_LIKED_BREEDS, likedBreeds)
         this.$emit('like')
