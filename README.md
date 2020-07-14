@@ -1,3 +1,23 @@
+## каК запускатЬ
+```
+yarn || npm install
+```
+
+### Compiles and hot-reloads for development
+```
+yarn dev || npm run dev
+```
+
+### Compiles and minifies for production
+```
+yarn build || npm run build
+```
+
+### Lints and fixes files
+```
+yarn lint || npm run lint
+```
+
 # Цель #
 
 Разработать SPA-приложение с использованием Vue + Vuex + Vue router.
@@ -33,26 +53,3 @@ API: https://dog.ceo/dog-api
 - Исходный код проекта должен быть выложен на GitHub.
 - Верстка с помощью Vuetify (Only class)
 - CoreJS3
-
-## Project setup
-```
-yarn
-```
-
-### Compiles and hot-reloads for development
-```
-yarn dev
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
