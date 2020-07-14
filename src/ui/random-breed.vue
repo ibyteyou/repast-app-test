@@ -1,6 +1,6 @@
 <template lang="pug">
   .random-breed
-    img(:src="imgUrl")
+    img(:src="_imgUrl")
     .resize
     .inner
     p.name {{ name }}
@@ -12,14 +12,22 @@
 </template>
 
 <script>
-  const LS_LIKED_BREADS = 'likedBreeds'
+  import { LS_LIKED_BREEDS } from '../consts'
 
   export default {
     data: () => ({
-      imgUrl: null,
+      imgUrlComputed: null,
       liked: false
     }),
-    props: ['data', 'name'],
+    props: ['data', 'name', 'imgUrl'],
+    computed: {
+      _imgUrl: {
+        get: ({ imgUrl, imgUrlComputed }) => imgUrl || imgUrlComputed || null,
+        set (value) {
+          this.imgUrlComputed = value
+        }
+      }
+    },
     methods: {
       like () {
         // this.liked = true
@@ -30,27 +38,36 @@
 
         // if ()
 
-        const likedBreeds = this.$ls.get(LS_LIKED_BREADS, [])
-        const likeAlreadyIndex = likedBreeds.indexOf(this.name)
+        const likedBreeds = this.$ls.get(LS_LIKED_BREEDS, [])
+        const likeAlreadyIndex = likedBreeds.findIndex(lB => lB.name === this.name)
         const isLiked = likeAlreadyIndex === -1
         this.liked = isLiked
 
         if (isLiked) {
-          likedBreeds.push(this.name)
+          likedBreeds.push({
+            name: this.name,
+            imgUrl: this._imgUrl
+          })
           this.liked = true
         } else {
           likedBreeds.splice(likeAlreadyIndex, 1)
           this.liked = false
         }
         // console.log(likedBreeds)
-        this.$ls.set(LS_LIKED_BREADS, likedBreeds)
+        this.$ls.set(LS_LIKED_BREEDS, likedBreeds)
       }
     },
     created () {
-      this.liked = this.$ls.get(LS_LIKED_BREADS, []).indexOf(this.name) > -1
-      this.$http.get(`${this.$apiUrl}/breed/${this.name}/images/random`).then(({ data }) => {
-        this.imgUrl = data.message
-      })
+      this.liked = this.$ls.get(LS_LIKED_BREEDS, []).indexOf(this.name) > -1
+      // console.log(this.imgUrl)
+      if (!this._imgUrl) {
+        this.$http.get(`${this.$apiUrl}/breed/${this.name}/images/random`).then(({ data }) => {
+          this._imgUrl = data.message
+        })
+      }
+    // },
+    // mounted () {
+    //   console.warn(this.imgUrl)
     }
   }
 </script>
@@ -73,7 +90,7 @@
       min-height: 100%
       width: 100%
       position: absolute
-      top: 75%
+      top: 50%
       left: 50%
       transform: translate(-50%, -50%)
     p.name

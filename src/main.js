@@ -4,6 +4,8 @@ import VueRouter from 'vue-router'
 import VueStorage from 'vue-ls'
 import { API_URL } from './consts'
 import app from './app.vue'
+import MainPage from './pages/main'
+import FavouritesPage from './pages/favourites'
 
 Vue.config.productionTip = false
 Vue.use(VueResource)
@@ -32,9 +34,13 @@ const App = new Vue({
           return savedPosition
       }
     },
-    routes: [
-
-    ]
+    routes: [{
+      path: '/',
+      component: MainPage
+    }, {
+      path: '/favourites',
+      component: FavouritesPage
+    }]
   })
 })
 
