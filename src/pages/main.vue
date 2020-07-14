@@ -26,7 +26,8 @@
             span.group-tag(:class="{ last: charChilds.length === index + 1, active: routeGroupBreed && routeGroupBreed === breedInGroup }") {{ breedInGroup }}
     random-breed#first-breed(v-if="loaded", :data="allBreeds[firstBreedKey]", :name="firstBreedKey")
     #grid-breeds
-      random-breed(v-if="index" v-for="(name, index) in allBreedsSorted", :data="Array.isArray(allBreeds) ? allBreeds[index] : allBreeds[name]", :key="name", :name="name")
+      template(v-for="infCount in infinityIterations")
+        random-breed(v-if="index" v-for="(name, index) in allBreedsSorted", :data="Array.isArray(allBreeds) ? allBreeds[index] : allBreeds[name]", :key="name + infCount", :name="name")
 </template>
 
 <script>
@@ -43,6 +44,7 @@
       allBreeds: [],
       breedsTagsOpened: false,
       groupByBreed: '',
+      infinityIterations: 1,
       loaded: false,
       sort: 'rnd',
       routeGroupBreed: null
@@ -80,6 +82,11 @@
         this.$router.push('/')
       },
       load (opts = {}) {
+        if (opts.more) {
+          this.infinityIterations++
+          return
+        }
+
         if (!opts.forceBreadGroups && this.routeGroupBreed) {
           this.$http.get(`breed/${this.routeGroupBreed}/images`).then(({ data }) => {
             this.allBreeds = data.message.reduce((acc, cur, index) => {
@@ -138,6 +145,13 @@
     created () {
       this.routeGroupBreed = this.$route.params.breed
       this.load()
+      window.addEventListener('scroll', () => {
+        // 100px header height
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight + 100) {
+          if (this.routeGroupBreed) return
+          this.infinityIterations += 1
+        }
+      })
     }
   }
 </script>
