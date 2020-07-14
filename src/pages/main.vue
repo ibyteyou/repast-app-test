@@ -8,15 +8,15 @@
             svg(width="9" height="5" viewBox="0 0 9 5" fill="none" xmlns="http://www.w3.org/2000/svg")
               path(d="M1.002 4.83102C0.772777 5.05633 0.401136 5.05633 0.171916 4.83102C-0.0573044 4.60572 -0.0573044 4.24043 0.171916 4.01513L4.08496 0.168977C4.31418 -0.0563259 4.68582 -0.0563259 4.91504 0.168977L8.82808 4.01513C9.05731 4.24043 9.05731 4.60572 8.82808 4.83102C8.59886 5.05633 8.22722 5.05633 7.998 4.83102L4.5 1.39282L1.002 4.83102Z" fill="#626262")
         #selected-group-by-breed(v-if="routeGroupBreed")
-          span.group-tag {{ routeGroupBreed }}
+          span.group-tag {{ routeGroupBreed }} #[span.close-icon(@click.stop="toMain") ×]
       a#sort-switch(:class="{ actived: sort === 'abc' }", :href="`@sort-by-${sort === 'abc' ? 'rnd' : 'abc'}`" @click.prevent="toggleSort")
         label Сортировка по алфавиту
         svg(width="31" height="16" viewBox="0 0 31 16" fill="none" xmlns="http://www.w3.org/2000/svg")
           rect(x="1" y="1" width="29" height="14.5" rx="7.25" stroke="#626262" stroke-linecap="round" stroke-linejoin="round")
           path(fill-rule="evenodd" clip-rule="evenodd" d="M8.83333 13.0833C11.5027 13.0833 13.6667 10.9193 13.6667 8.24996C13.6667 5.58058 11.5027 3.41663 8.83333 3.41663C6.16396 3.41663 4 5.58058 4 8.24996C4 10.9193 6.16396 13.0833 8.83333 13.0833Z" fill="#626262")
     #main-page-header-groups(v-show="breedsTagsOpened")
-      div.line
-        a(href="/") #[span.group-tag Все пёсели]
+      div.reset-line
+        a(:class="{ active: !routeGroupBreed }" href="/" @click.prevent="toMain") #[span.group-tag Все пёсели]
       template(v-for="(charChilds, char) in abcBreedGroups")
         span.group-char
           span.cap-char {{ char }}
@@ -60,6 +60,11 @@
       firstBreedKey: ({ allBreedsSorted }) => allBreedsSorted && allBreedsSorted[0]
     },
     methods: {
+      toMain () {
+        this.$router.push('/').then(() => {
+          this.routeGroupBreed = false
+        })
+      },
       load () {
         this.$http.get('breeds/list/all').then(({ data }) => {
           if (!data || !data.message) {
@@ -139,14 +144,22 @@
     #selected-group-by-breed
       display: inline-block
       color: #3C59F0
-      .group-tag
-        border-color: #3C59F0
+      margin-left: 1em
+      span.group-tag
+        border-color: #3C59F0 !important
+        .close-icon:hover
+          color: #fff
     #main-page-header-groups,
     #selected-group-by-breed
       text-align: left
       overflow-wrap: break-word
-      div:not(.line)
+      div:not(.reset-line)
         display: inline-block
+      .reset-line
+        a.active
+          color: #3C59F0
+          span.group-tag
+            border-color: #3C59F0
       span
         &.group-char
           font-size: 20px
@@ -172,6 +185,11 @@
             margin-left: .5em
           &.last
             margin-right: 3em
+          .close-icon
+            margin-left: .25em
+            font-size: 18px
+            position: relative
+            top: 1px
     #sort-switch
       label
         cursor: pointer
