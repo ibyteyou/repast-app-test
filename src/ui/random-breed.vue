@@ -60,8 +60,10 @@
           likedBreeds.splice(likeAlreadyIndex, 1)
           this.liked = false
         }
+        console.log(likedBreeds)
         // console.log(likedBreeds)
         this.$ls.set(LS_LIKED_BREEDS, likedBreeds)
+        this.$emit('like')
       },
       updateRemoteImgUrlByName () {
         this.$http.get(`${this.$apiUrl}/breed/${this.name}/images/random`).then(({ data }) => {
@@ -70,7 +72,7 @@
       }
     },
     created () {
-      this.liked = this.$ls.get(LS_LIKED_BREEDS, []).indexOf(this.name) > -1
+      this.liked = this.$ls.get(LS_LIKED_BREEDS, []).some(lB => lB.name === this.name && lB.imgUrl === this._imgUrl)
       // console.log(this.imgUrl)
       if (!this._imgUrl) {
         this.updateRemoteImgUrlByName() // very strange api /=====/

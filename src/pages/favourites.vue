@@ -1,7 +1,7 @@
 <template lang="pug">
   #favourites-page
     #grid-breeds
-      random-breed(v-if="index" v-for="(likedBreed, index) in likedBreeds", :img-url="likedBreed.imgUrl", :key="index", :name="likedBreed.name")
+      random-breed(v-for="(likedBreed, index) in likedBreeds", :img-url="likedBreed.imgUrl", :key="likedBreed.name", :name="likedBreed.name" @like="loadLocalLikes")
 </template>
 
 <script>
@@ -21,23 +21,13 @@
     computed: {
       firstBreedKey: ({ allBreeds }) => allBreeds && Object.keys(allBreeds)[0]
     },
+    methods: {
+      loadLocalLikes () {
+        this.likedBreeds = this.$ls.get(LS_LIKED_BREEDS)
+      }
+    },
     created () {
-      const LikedBreeds = this.$ls.get(LS_LIKED_BREEDS)
-      this.likedBreeds = LikedBreeds
-      // this.$http.get('breeds/list/all').then(({ data }) => {
-      //   if (!data || !data.message) {
-      //     this.allBreeds = new Error('failed "breeds/list/all" API lol =/')
-      //     return
-      //   }
-      //
-      //   const breedsKeys = Object.keys(data.message)
-      //
-      //   // this.allBreeds = shuffle(data.message)
-      //   this.allBreeds = shuffle(breedsKeys).reduce((acc, cur) => {
-      //     return Object.assign(acc, { [cur]: data.message[cur] })
-      //   }, {})
-      //   this.loaded = true
-      // })
+      this.loadLocalLikes()
     }
   }
 </script>
