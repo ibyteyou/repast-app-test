@@ -23,7 +23,7 @@
           | &nbsp;
           //- TODO: nbsp lol, vue-cli takoe sebe
           a(v-for="(breedInGroup, index) in charChilds", :href="`/${breedInGroup}`")
-            span.group-tag(:class="{ last: charChilds.length === index + 1 }") {{ breedInGroup }}
+            span.group-tag(:class="{ last: charChilds.length === index + 1, active: routeGroupBreed && routeGroupBreed === breedInGroup }") {{ breedInGroup }}
     random-breed#first-breed(v-if="loaded", :data="allBreeds[firstBreedKey]", :name="firstBreedKey")
     #grid-breeds
       random-breed(v-if="index" v-for="(name, index) in allBreedsSorted", :data="Array.isArray(allBreeds) ? allBreeds[index] : allBreeds[name]", :key="name", :name="name")
@@ -53,6 +53,7 @@
           this.routeGroupBreed = params.breed
         } else if (this.routeGroupBreed) {
           this.routeGroupBreed = null
+          this.load()
         }
       }
       // routeGroupBreed () {
@@ -216,6 +217,9 @@
             margin-left: .5em
           &.last
             margin-right: 3em
+          &.active
+            color: #3C59F0
+            border-color: #3C59F0
           .close-icon
             margin-left: .25em
             font-size: 18px
