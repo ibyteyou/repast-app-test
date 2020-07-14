@@ -26,7 +26,7 @@
             span.group-tag(:class="{ last: charChilds.length === index + 1 }") {{ breedInGroup }}
     random-breed#first-breed(v-if="loaded", :data="allBreeds[firstBreedKey]", :name="firstBreedKey")
     #grid-breeds
-      random-breed(v-if="index" v-for="(name, index) in allBreedsSorted", :data="allBreeds[name]", :key="name", :name="name")
+      random-breed(v-if="index" v-for="(name, index) in allBreedsSorted", :data="Array.isArray(allBreeds) ? allBreeds[index] : allBreeds[name]", :key="name", :name="name")
 </template>
 
 <script>
@@ -47,8 +47,23 @@
       sort: 'rnd',
       routeGroupBreed: null
     }),
+    watch: {
+      '$route.params' (params) {
+        if (params.breed) {
+          this.routeGroupBreed = params.breed
+        } else if (this.routeGroupBreed) {
+          this.routeGroupBreed = null
+        }
+      }
+      // routeGroupBreed () {
+      //   this.load()
+      // }
+    },
     computed: {
       allBreedsSorted: ({ allBreeds, sort }) => {
+        if (Array.isArray(allBreeds)) {
+          return allBreeds.map(aB => aB.name)
+        }
         const breedsKeys = Object.keys(allBreeds)
         if (sort === 'abc') {
           return breedsKeys
@@ -61,42 +76,52 @@
     },
     methods: {
       toMain () {
-        this.$router.push('/').then(() => {
-          this.routeGroupBreed = false
-        })
+        this.$router.push('/')
       },
       load () {
-        this.$http.get('breeds/list/all').then(({ data }) => {
-          if (!data || !data.message) {
-            this.allBreeds = new Error('failed "breeds/list/all" API lol =/')
-            return
-          }
-
-          const breedsKeys = Object.keys(data.message)
-
-          if (!this.abcBreedGroups) {
-            this.abcBreedGroups = breedsKeys.reduce((acc, cur) => {
-              const CAPITAL_CHAR = cur[0].toUpperCase()
-
-              if (acc[CAPITAL_CHAR]) {
-                acc[CAPITAL_CHAR].push(cur)
-              } else {
-                acc[CAPITAL_CHAR] = [cur]
-              }
+        if (this.routeGroupBreed) {
+          this.$http.get(`breed/${this.routeGroupBreed}/images`).then(({ data }) => {
+            this.allBreeds = data.message.reduce((acc, cur, index) => {
+              acc.push({
+                name: `${this.routeGroupBreed} ${index}`,
+                imgUrl: cur
+              })
               return acc
-            }, {})
-          }
+            }, [])
+          })
+        } else {
+          this.$http.get('breeds/list/all').then(({ data }) => {
+            if (!data || !data.message) {
+              this.allBreeds = new Error('failed "breeds/list/all" API lol =/')
+              return
+            }
 
-          // this.allBreeds = shuffle(data.message)
-          if (this.sort === 'rnd') {
-            this.allBreeds = shuffle(breedsKeys).reduce((acc, cur) => {
-              return Object.assign(acc, { [cur]: data.message[cur] })
-            }, {})
-          } else {
-            this.allBreeds = data.message
-          }
-          this.loaded = true
-        })
+            const breedsKeys = Object.keys(data.message)
+
+            if (!this.abcBreedGroups) {
+              this.abcBreedGroups = breedsKeys.reduce((acc, cur) => {
+                const CAPITAL_CHAR = cur[0].toUpperCase()
+
+                if (acc[CAPITAL_CHAR]) {
+                  acc[CAPITAL_CHAR].push(cur)
+                } else {
+                  acc[CAPITAL_CHAR] = [cur]
+                }
+                return acc
+              }, {})
+            }
+
+            // this.allBreeds = shuffle(data.message)
+            if (this.sort === 'rnd') {
+              this.allBreeds = shuffle(breedsKeys).reduce((acc, cur) => {
+                return Object.assign(acc, { [cur]: data.message[cur] })
+              }, {})
+            } else {
+              this.allBreeds = data.message
+            }
+            this.loaded = true
+          })
+        }
       },
       toggleSort () {
         this.sort = this.sort === 'abc' ? 'rnd' : 'abc'

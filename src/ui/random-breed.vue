@@ -29,7 +29,7 @@
     },
     computed: {
       _imgUrl: {
-        get: ({ imgUrl, imgUrlComputed }) => imgUrl || imgUrlComputed || null,
+        get: ({ data, imgUrl, imgUrlComputed }) => imgUrl || (data && data.imgUrl) || imgUrlComputed || null,
         set (value) {
           this.imgUrlComputed = value
         }
