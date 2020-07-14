@@ -40,6 +40,9 @@ const App = new Vue({
     }, {
       path: '/favourites',
       component: FavouritesPage
+    }, {
+      path: '/:breed',
+      component: MainPage
     }]
   })
 })

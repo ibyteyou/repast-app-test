@@ -2,10 +2,13 @@
   #main-page
     #main-page-header
       #breeds-select(:class="{ actived: breedsTagsOpened }" @click="breedsTagsOpened = !breedsTagsOpened")
-        label
-          | Породы
-          svg(width="9" height="5" viewBox="0 0 9 5" fill="none" xmlns="http://www.w3.org/2000/svg")
-            path(d="M1.002 4.83102C0.772777 5.05633 0.401136 5.05633 0.171916 4.83102C-0.0573044 4.60572 -0.0573044 4.24043 0.171916 4.01513L4.08496 0.168977C4.31418 -0.0563259 4.68582 -0.0563259 4.91504 0.168977L8.82808 4.01513C9.05731 4.24043 9.05731 4.60572 8.82808 4.83102C8.59886 5.05633 8.22722 5.05633 7.998 4.83102L4.5 1.39282L1.002 4.83102Z" fill="#626262")
+        #breeds-select-trigger
+          label
+            | Породы
+            svg(width="9" height="5" viewBox="0 0 9 5" fill="none" xmlns="http://www.w3.org/2000/svg")
+              path(d="M1.002 4.83102C0.772777 5.05633 0.401136 5.05633 0.171916 4.83102C-0.0573044 4.60572 -0.0573044 4.24043 0.171916 4.01513L4.08496 0.168977C4.31418 -0.0563259 4.68582 -0.0563259 4.91504 0.168977L8.82808 4.01513C9.05731 4.24043 9.05731 4.60572 8.82808 4.83102C8.59886 5.05633 8.22722 5.05633 7.998 4.83102L4.5 1.39282L1.002 4.83102Z" fill="#626262")
+        #selected-group-by-breed(v-if="routeGroupBreed")
+          span.group-tag {{ routeGroupBreed }}
       a#sort-switch(:class="{ actived: sort === 'abc' }", :href="`@sort-by-${sort === 'abc' ? 'rnd' : 'abc'}`" @click.prevent="toggleSort")
         label Сортировка по алфавиту
         svg(width="31" height="16" viewBox="0 0 31 16" fill="none" xmlns="http://www.w3.org/2000/svg")
@@ -41,7 +44,8 @@
       breedsTagsOpened: false,
       groupByBreed: '',
       loaded: false,
-      sort: 'rnd'
+      sort: 'rnd',
+      routeGroupBreed: null
     }),
     computed: {
       allBreedsSorted: ({ allBreeds, sort }) => {
@@ -95,6 +99,7 @@
       }
     },
     created () {
+      this.routeGroupBreed = this.$route.params.breed
       this.load()
     }
   }
@@ -117,7 +122,9 @@
       justify-content: space-between
       margin-bottom: 30px
     #breeds-select
-      border-bottom: .5px dashed
+      #breeds-select-trigger
+        display: inline-block
+        border-bottom: .5px dashed
       &.actived
         svg
           transform: scaleY(1)
@@ -129,7 +136,13 @@
           bottom: .125em
           margin-left: .5em
           transform: scaleY(-1)
-    #main-page-header-groups
+    #selected-group-by-breed
+      display: inline-block
+      color: #3C59F0
+      .group-tag
+        border-color: #3C59F0
+    #main-page-header-groups,
+    #selected-group-by-breed
       text-align: left
       overflow-wrap: break-word
       div:not(.line)
